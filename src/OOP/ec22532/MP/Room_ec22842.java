@@ -21,7 +21,7 @@ class Room_ec22842 extends Room implements Visitable {
         Scanner scanner = new Scanner(System.in);
         Random random = new Random();
         v.tell("Hello welcome to the office department of bank services. You are " + d + "\nPlease enter your full name :");
-        String fullname = scanner.nextLine();
+        String fullname = v.getInputText();
         String name = fullname.replaceAll(" ", ""); 
         char choice = 'e';
         int randomNumber;
@@ -70,11 +70,11 @@ class Room_ec22842 extends Room implements Visitable {
     
                 if(action == 'a'){
                     v.tell("How much do you want to withdraw from your sold ?\nEnter the amount: ");
-                    number = scanner.nextInt();
+                    number = Integer.parseInt(v.getInputText());
                     v.takeGold(number);
                 }else if(action == 'b'){
                     v.tell("How much coin do you want to insert to your sold ?\nEnter the amount: ");
-                    number = scanner.nextInt();
+                    number = Integer.parseInt(v.getInputText());
                     v.giveGold(number);
                 }else if(action == 'c'){
                     v.tell("You are participating to Room_ec22842's draw !!!");
@@ -82,9 +82,9 @@ class Room_ec22842 extends Room implements Visitable {
                     v.tell("As I can see, your full name is : " + fullname + "And I can see that you are registered in the following Bank : " + bank);
                     v.tell("Here is your personalized address e-mail : " + name.toLowerCase() + mailsuffix + " and your password is :" + password + "\nThe results of the draw has been sent to your email.");
                         v.tell("Enter your email address :");
-                        mail = scanner.nextLine();
+                        mail = v.getInputText();
                         v.tell("Enter your password : ");
-                        parola = scanner.nextLine();
+                        parola = v.getInputText();
                         if(mail.equals((name.toLowerCase() + mailsuffix)) && parola.equals(password)){
                             randomNumber = random.nextInt((3 - 1) + 1) + 1;
                             if(randomNumber == 1){

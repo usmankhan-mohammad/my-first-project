@@ -1,5 +1,6 @@
 package OOP.ec22532.MP;
 
+import java.awt.*;
 import java.io.PrintStream;
 import java.io.InputStream;
 import java.util.Scanner;
@@ -19,7 +20,13 @@ class IOVisitor implements Visitor {
         items = new Item[1000];
         next = 0;
     }
-    
+
+
+    public String getInputText(){
+        Scanner scanner = new Scanner(System.in);
+        String str = scanner.nextLine();
+        return str;
+    }
     
     private static final char[] yOrN = { 'y', 'n'};
    
@@ -99,5 +106,9 @@ class IOVisitor implements Visitor {
         out.println("You now have "+purse+" pieces of gold.");
         
         return t;
+    }
+
+    public void changeCol(Color color){
+        //does nothing
     }
 }

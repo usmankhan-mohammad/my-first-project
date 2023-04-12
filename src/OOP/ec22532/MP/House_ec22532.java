@@ -1,3 +1,6 @@
+package OOP.ec22532.MP;
+
+import java.awt.*;
 import java.util.Scanner;
 class House_ec22532 extends House {
 
@@ -28,27 +31,29 @@ class House_ec22532 extends House {
 
             if (housePos == 0){
                 
-                if (hallwayChoice() == true){break;}
+                if (hallwayChoice(v) == true){break;}
                 else{
+                    v.changeCol(Color.MAGENTA);
                     directionGoing = roomOne.visit(v,directionFrom);
                     //directionGoing = directionGoing.opposite(directionGoing); //must be done as room ec22532 returns a "FROM" direction //changed april 7th 2023
                     directionFrom = directionGoing.opposite(directionGoing);
                     
-                    if (directionGoing == Direction.TO_SOUTH || directionGoing == Direction.TO_EAST || directionGoing == Direction.TO_WEST){housePos = 1;}
-                    else if (directionGoing == Direction.TO_NORTH){housePos = -1; System.out.println("You have left the house through the front exit"); break;}
+                    if (directionGoing == Direction.TO_NORTH || directionGoing == Direction.TO_EAST || directionGoing == Direction.TO_WEST){housePos = 1;}
+                    else if (directionGoing == Direction.TO_SOUTH){housePos = -1; v.tell("You have left the house through the front exit"); break;}
                     
                     }} //going into room 1
             
             else if (housePos == 1){
                 
-                if (hallwayChoice() == true){break;}
+                if (hallwayChoice(v) == true){break;}
                 else{
+                    v.changeCol(Color.blue);
                     directionGoing = roomTwo.visit(v,directionFrom);
                     directionFrom = directionGoing.opposite(directionGoing);
                     
                     if (directionGoing == Direction.TO_SOUTH || directionGoing == Direction.TO_EAST){housePos = 0;}
                     else if (directionGoing == Direction.TO_NORTH){housePos = 2;}
-                    else if (directionGoing == Direction.TO_WEST){housePos = -1; System.out.println("You have left the house through the secret exit"); break;}
+                    else if (directionGoing == Direction.TO_WEST){housePos = -1; v.tell("You have left the house through the secret exit"); break;}
                     
                     
                     
@@ -56,14 +61,16 @@ class House_ec22532 extends House {
             
             else if (housePos == 2){
                 
-                if (hallwayChoice() == true){break;}
+                if (hallwayChoice(v) == true){break;}
                 else{
+                    Color darkgreen = new Color(43, 105, 31);
+                    v.changeCol(darkgreen);
                     directionGoing = roomThree.visit(v,directionFrom);
                     directionFrom = directionGoing.opposite(directionGoing);
                     
                     if (directionGoing == Direction.TO_WEST || directionGoing == Direction.TO_EAST){housePos = 0;}
                     else if (directionGoing == Direction.TO_SOUTH){housePos = 1;}
-                    else if (directionGoing == Direction.TO_NORTH){housePos = -1; System.out.println("You have left the house through the back exit"); break;}
+                    else if (directionGoing == Direction.TO_NORTH){housePos = -1; v.tell("You have left the house through the back exit"); break;}
                     
                     
                     }} //going into room 3
@@ -76,10 +83,12 @@ class House_ec22532 extends House {
 
     
     
-    public boolean hallwayChoice(){
-        System.out.println("Do you a) leave the house or b) try to go to the next room ?");
-        String userChoice = inputString();
-        if (userChoice.toUpperCase().equals("A")){
+    public boolean hallwayChoice(Visitor v){
+        //v.tell("Do you a) leave the house or b) try to go to the next room ?");
+        //String userChoice = inputString();
+        char[] possibleChoices = {'a','b'};
+        char userChoice = v.getChoice("Do you a) leave the house or b) try to go to the next room ?", possibleChoices);
+        if (userChoice == 'a'){
             return true;
         }
         else {
@@ -88,10 +97,13 @@ class House_ec22532 extends House {
         
     }
     
-    public String inputString(){
-        Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine();
-        return input;
-    }
+//    public String inputString(Visitor v){
+//        String s = v.getInputText();
+//        return s;
+//
+////        Scanner scanner = new Scanner(System.in);
+////        String input = scanner.nextLine();
+////        return input;
+//    }
 
 }

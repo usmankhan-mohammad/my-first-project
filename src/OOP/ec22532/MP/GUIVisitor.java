@@ -1,11 +1,16 @@
-package OOP.ec22532.A8;
+package OOP.ec22532.MP;
 
 import javax.swing.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
+import java.util.Random;
 import java.util.Scanner;
 
 
@@ -15,11 +20,14 @@ class GUIVisitor implements Visitor {
     JFrame db = new JFrame();
     private JButton YesB;
     private JButton NoB;
-    private JTextArea OutputText;
+    private JTextPane OutputText;
     private JPanel mainPanel;
 
-    JComboBox heroesCB;
+    JComboBox arrayCB;
     private JButton submitButton;
+    private JTextField inputTextField;
+    private JButton inputButton;
+    private JLabel currentGold;
 
     private PrintStream out;
     private Scanner in;
@@ -29,7 +37,20 @@ class GUIVisitor implements Visitor {
 
     protected int yesno = 0;
     protected String chosen;
+    protected String inputText;
     protected boolean submitIsClicked;
+
+    protected boolean inputIsClicked;
+
+
+
+
+    Color currentCol = new Color(0,0,0);
+
+    public void changeCol(Color color){
+        OutputText.setText("");
+        currentCol = color;
+    }
     public void resetBs(){
         YesB.setEnabled(false);
         NoB.setEnabled(false);
@@ -68,13 +89,21 @@ class GUIVisitor implements Visitor {
         db.setSize(1600,900);
         db.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         db.setVisible(true);
+        currentGold.setText("Gold: " + purse);
 
 
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                chosen = heroesCB.getSelectedItem().toString();
+                chosen = arrayCB.getSelectedItem().toString();
                 submitIsClicked = true;
+            }
+        });
+        inputButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                inputText = inputTextField.getText();
+                inputIsClicked = true;
             }
         });
     }
@@ -83,22 +112,70 @@ class GUIVisitor implements Visitor {
     private static final char[] yOrN = { 'y', 'n'};
 
     public void tell(String m) {
-        OutputText.append(m+"\n");
+        final String RED = "\\u001B[31m";
+        final String RESET = "\u001B[0m";
+
+
+
+        if (m.charAt(0) == '/'){
+            String n = m.replaceFirst("/","");
+            String msg = (n+"\n");
+            appendToPane(OutputText, msg, Color.red);
+        }
+        else{
+            String msg = (m+"\n");
+            appendToPane(OutputText, msg, currentCol);
+        }
+    }
+
+    private void appendToPane(JTextPane tp, String msg, Color c)
+    {
+        //borrowed from https://stackoverflow.com/questions/9650992/how-to-change-text-color-in-the-jtextarea
+        StyleContext sc = StyleContext.getDefaultStyleContext();
+        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
+
+        aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Lucida Console");
+        aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
+
+        int len = tp.getDocument().getLength();
+        tp.setCaretPosition(len);
+        tp.setCharacterAttributes(aset, false);
+        tp.replaceSelection(msg);
+    }
+
+
+    public String getInputText(){
+        inputIsClicked = false;
+        inputButton.setEnabled(true);
+        inputTextField.setEnabled(true);
+        while(!inputIsClicked){
+            db.repaint();
+        }
+        String str = inputText;
+        tell("/"+str);
+        inputText = "";
+        inputIsClicked = true;
+        inputButton.setEnabled(false);
+        inputTextField.setEnabled(false);
+        inputTextField.setText("");
+        return str;
     }
 
     public char getChoice(String d, char[] a) {
         tell(d);
-        char[] heroes = {'I','H','T','A','S'};
+        //char[] heroes = {'I','H','T','A','S'}
         if (a[0] == 'y' && a[1] == 'n'){
             while (yesno == 0){
                 turnOnBs();
             }
             if (yesno == 1){
                 resetBs();
+                tell("/y");
                 return 'y';
             }
             else if (yesno == 2){
                 resetBs();
+                tell("/n");
                 return 'n';
             }
             else{
@@ -107,19 +184,20 @@ class GUIVisitor implements Visitor {
             }
 
         }
-        else if (Arrays.equals(a, heroes)){
+        else if (a.length != 0){
             submitIsClicked = false;
             submitButton.setEnabled(true);
-            heroesCB.setEnabled(true);
+            arrayCB.setEnabled(true);
+            arrayCB.removeAllItems();;
 
             for (int i = 0; i < a.length; i ++){
-                heroesCB.addItem(a[i]);
+                arrayCB.addItem(a[i]);
             }
             while(!submitIsClicked){
                 db.repaint();
             }
             char chosenChar = chosen.charAt(0);
-            heroesCB.setEnabled(false);
+            arrayCB.setEnabled(false);
             submitButton.setEnabled(false);
             boolean found = false;
             int i = 0;
@@ -133,6 +211,7 @@ class GUIVisitor implements Visitor {
             chosen = null;
             submitIsClicked = false;
             if (found){
+                tell("/" + chosenChar);
                 return chosenChar;
             }
             else{
@@ -159,7 +238,6 @@ class GUIVisitor implements Visitor {
                 }
             }
         }
-
 
     }
 
@@ -196,6 +274,7 @@ class GUIVisitor implements Visitor {
         tell("You are given "+n+" gold pieces.");
         purse += n;
         tell("You now have "+purse+" pieces of gold.");
+        currentGold.setText("Gold: " + purse);
     }
 
     public int takeGold(int n) {

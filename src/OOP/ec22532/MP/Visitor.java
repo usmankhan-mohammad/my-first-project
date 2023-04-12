@@ -1,5 +1,7 @@
 package OOP.ec22532.MP;
 
+import java.awt.*;
+
 interface Visitor {
     
     void tell(String messageForVisitor);
@@ -21,4 +23,8 @@ interface Visitor {
         
     int takeGold( // Returns number of pieces actually obtained from visitor.
                  int numberOfPiecesToTake);
+
+    String getInputText();
+
+    void changeCol(Color color);
 }
